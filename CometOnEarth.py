@@ -6,14 +6,14 @@ import argparse
 # =================================================================
 # ユーザー設定領域
 # =================================================================
-MAX_WIDTH_VALUE = 80      # 全角1文字=幅2 (40文字なら80)
+MAX_WIDTH_VALUE = 46      # 全角1文字=幅2 (40文字なら80)
 MIN_LAST_LINE_WIDTH = 6   # 最終行の最小幅 (全角3文字分)
 
 # 【重要】描画が半角に化けてしまう全角文字
 FIX_WIDTH_CHARS = "｜―…“”‘’❤"
 
 # 禁則文字設定
-GYOTO_KINSHI = "、。）」』】〕〉》〉｝ー々ぁぃぅぇぉっゃゅょァィゥェォッャュョ゛゜"
+GYOTO_KINSHI = "、。）」』】〕〉》〉｝ー々ぁぃぅぇぉっゃゅょァィゥェォッャュョ゛゜〟！？!?"
 GYOMATSU_KINSHI = "「『（【〔〈《〈｛"
 
 # 強調表示設定
@@ -161,10 +161,16 @@ def view_mode(file_path):
                 
                 if c['is_invisible']: continue
                 char_str = c['char']
-                if char_str in FIX_WIDTH_CHARS: char_str += " "
+
+                #########半角spの挿入を停止
+                # if char_str in FIX_WIDTH_CHARS: char_str += " "
                 
                 if c['error'] and not has_marked_error:
-                    char_str = f"{MARK}{char_str}{RESET}"
+
+                    ##### 文字色の変更を停止
+                    # char_str = f"{MARK}{char_str}{RESET}"
+                    char_str = f"{char_str}"
+                    
                     if i + 1 < len(char_sim):
                         if not char_sim[i+1]['error']:
                             has_marked_error = True
