@@ -14,7 +14,7 @@ FIX_WIDTH_CHARS = "｜―…“”‘’❤"
 
 # 禁則文字設定
 GYOTO_KINSHI = "、。）」』】〕〉》〉｝ー々ぁぃぅぇぉっゃゅょァィゥェォッャュョ゛゜〟！？!?"
-GYOMATSU_KINSHI = "「『（【〔〈《〈｛"
+GYOMATSU_KINSHI = "「『（【〔〈《〈｛〝"
 
 # 強調表示設定
 MARK = "\033[7m" #表示を反転する
