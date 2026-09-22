@@ -13,8 +13,14 @@ MIN_LAST_LINE_WIDTH = 6   # 最終行の最小幅 (全角3文字分)
 FIX_WIDTH_CHARS = "｜―…“”‘’❤"
 
 # 禁則文字設定
+## 行頭に来てはならない
 GYOTO_KINSHI = "、。）」』】〕〉》〉｝ー々ぁぃぅぇぉっゃゅょァィゥェォッャュョ゛゜〟！？!?"
+## 行頭2文字目に来てはならない(一般的な禁則ではない)
+GYOTO2_KINSHI = "。）」』】〕〉》〉｝〟！？!?"
+## 行末に来てはならない
 GYOMATSU_KINSHI = "「『（【〔〈《〈｛〝"
+## 行末2文字目に来てはならない(一般的な禁則ではない)
+GYOMATSU2_KINSHI = "「『（【〔〈《〈｛〝。）」』】〕〉》〉｝〟！？!?"
 
 # 強調表示設定
 MARK = "\033[7m" #表示を反転する
@@ -91,7 +97,13 @@ def run_simulation(raw_line):
         curr, prev = char_sim[i], char_sim[i-1]
         if curr['line'] != prev['line']:
             if curr['char'] in GYOTO_KINSHI: curr['error'] = True
+            if i + 1 < len(char_sim) and char_sim[i + 1]['line'] == curr['line']:
+                if char_sim[i + 1]['char'] in GYOTO2_KINSHI:
+                    char_sim[i + 1]['error'] = True
             if prev['char'] in GYOMATSU_KINSHI: prev['error'] = True
+            if i >= 2 and char_sim[i - 2]['line'] == prev['line']:
+                if char_sim[i - 2]['char'] in GYOMATSU2_KINSHI:
+                    char_sim[i - 2]['error'] = True
     return char_sim, line_count
 
 # チェックモード関数
@@ -126,8 +138,12 @@ def check_mode(file_path):
                 if any(c['error'] for c in chars):
                     if chars[0]['error'] and chars[0]['char'] in GYOTO_KINSHI:
                         print(f"L{line_num:4}: 【行頭禁則】 「{chars[0]['char']}」が第{l_idx+1}折返行の先頭です。")
+                    elif len(chars) > 1 and chars[1]['error'] and chars[1]['char'] in GYOTO2_KINSHI:
+                        print(f"L{line_num:4}: 【行頭2文字目禁則】 「{chars[1]['char']}」が第{l_idx+1}折返行の2文字目です。")
                     elif chars[-1]['error'] and chars[-1]['char'] in GYOMATSU_KINSHI:
                         print(f"L{line_num:4}: 【行末禁則】 「{chars[-1]['char']}」が第{l_idx+1}折返行の末尾です。")
+                    elif len(chars) > 1 and chars[-2]['error'] and chars[-2]['char'] in GYOMATSU2_KINSHI:
+                        print(f"L{line_num:4}: 【行末2文字目禁則】 「{chars[-2]['char']}」が第{l_idx+1}折返行の末尾から2文字目です。")
                     else:
                         print(f"L{line_num:4}: 【ルビ/親文字/構成エラー】 第{l_idx+1}折返行付近を確認。")
                     error_reported = True
